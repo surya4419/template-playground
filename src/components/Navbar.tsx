@@ -8,7 +8,7 @@ import {
   UserOutlined,
   InfoOutlined,
   BookOutlined,
-  CaretDownFilled,
+  
   MenuOutlined
 } from "@ant-design/icons";
 import ToggleDarkMode from "./ToggleDarkMode";
@@ -23,18 +23,36 @@ function Navbar({ scrollToFooter }: NavbarProps) {
   const [hovered, setHovered] = useState<
     null | "home" | "explore" | "help" | "github" | "join"
   >(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const screens = useBreakpoint();
   const location = useLocation();
 
   const props = useSpring({
     loop: true,
-    from: { opacity: 0.5, boxShadow: "0px 0px 0px rgba(255, 255, 255, 0)" },
+    from: { 
+      opacity: 0.5, 
+      boxShadow: "0px 0px 0px rgba(255, 255, 255, 0)",
+      height: "36px" ,
+      margin:"12px"
+    },
     to: [
-      { opacity: 1, boxShadow: "0px 0px 5px rgba(255, 255, 255, 1)" },
-      { opacity: 0.9, boxShadow: "0px 0px 0px rgba(255, 255, 255, 0)" },
+      { 
+        opacity: 1, 
+        boxShadow: "0px 0px 5px rgba(255, 255, 255, 1)",
+        height: "36px" ,
+        margin:"12px"
+      },
+      { 
+        opacity: 0.9, 
+        boxShadow: "0px 0px 0px rgba(255, 255, 255, 0)",
+        height: "36px" ,
+        margin:"12px"
+
+      },
     ],
     config: { duration: 1000 },
   });
+  
 
   const mobileMenu = (
     <Menu>
@@ -82,51 +100,6 @@ function Navbar({ scrollToFooter }: NavbarProps) {
           <BookOutlined /> Documentation
         </a>
       </Menu.Item>
-    </Menu>
-  );
-
-  const helpMenu = (
-    <Menu>
-      <Menu.ItemGroup key="info" title="Info">
-        <Menu.Item key="about">
-          <a
-            href="https://github.com/accordproject/template-playground/blob/main/README.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <QuestionOutlined /> About
-          </a>
-        </Menu.Item>
-        <Menu.Item key="community">
-          <a
-            href="https://discord.com/invite/Zm99SKhhtA"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <UserOutlined /> Community
-          </a>
-        </Menu.Item>
-        <Menu.Item key="issues">
-          <a
-            href="https://github.com/accordproject/template-playground/issues"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <InfoOutlined /> Issues
-          </a>
-        </Menu.Item>
-      </Menu.ItemGroup>
-      <Menu.ItemGroup title="Documentation">
-        <Menu.Item key="documentation">
-          <a
-            href="https://github.com/accordproject/template-engine/blob/main/README.md"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <BookOutlined /> Documentation
-          </a>
-        </Menu.Item>
-      </Menu.ItemGroup>
     </Menu>
   );
 
@@ -203,23 +176,41 @@ function Navbar({ scrollToFooter }: NavbarProps) {
             onMouseEnter={() => setHovered("help")}
             onMouseLeave={() => setHovered(null)}
           >
-            <Dropdown overlay={helpMenu} trigger={["click"]}>
-              <Button
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "white",
-                  height: "65px",
-                  display: "flex",
-                  alignItems: "center",
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsHelpOpen(!isHelpOpen);
                 }}
+                className="px-4 h-16 text-white hover:bg-white/10 transition-colors flex items-center gap-2"
               >
                 Help
-                <CaretDownFilled
-                  style={{ fontSize: "10px", marginLeft: "5px" }}
-                />
-              </Button>
-            </Dropdown>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {isHelpOpen && (
+                <div className="absolute top-16 right-0 bg-white border border-gray-200 shadow-lg rounded-md w-40 py-3 z-50 divide-y divide-gray-100" onClick={(e) => e.stopPropagation()}>
+                  <a href="https://github.com/accordproject/template-playground/blob/main/README.md" target="_blank" className="flex items-center px-3 py-1.5 hover:bg-gray-100 transition-colors text-sm text-black">
+                    <QuestionOutlined className="mr-2 text-sm" />
+                    About
+                  </a>
+                  <a href="https://discord.com/invite/Zm99SKhhtA" target="_blank" className="flex items-center px-3 py-1.5 hover:bg-gray-100 transition-colors text-sm text-black">
+                    <UserOutlined className="mr-2 text-sm" />
+                    Community
+                  </a>
+                  <a href="https://github.com/accordproject/template-playground/issues" target="_blank" className="flex items-center px-3 py-1.5 hover:bg-gray-100 transition-colors text-sm text-black">
+                    <InfoOutlined className="mr-2 text-sm" />
+                    Issues
+                  </a>
+                  <a href="https://github.com/accordproject/template-engine/blob/main/README.md" target="_blank" className="flex items-center px-3 py-1.5 hover:bg-gray-100 transition-colors text-sm text-black">
+                    <BookOutlined className="mr-2 text-sm" />
+                    Documentation
+                  </a>
+                </div>
+              )}
+            </div>
+
           </div>
         </>
       ) : (
@@ -256,6 +247,7 @@ function Navbar({ scrollToFooter }: NavbarProps) {
         {!isLearnPage && (
           <div
             style={{
+            
               height: "65px",
               display: "flex",
               justifyContent: "center",
@@ -267,22 +259,27 @@ function Navbar({ scrollToFooter }: NavbarProps) {
             onMouseEnter={() => setHovered("join")}
             onMouseLeave={() => setHovered(null)}
           >
-            <Link to="/learn/intro" className="learnNow-button">
+  <Link to="/learn/intro" className="learnNow-button">
               <animated.button
                 style={{
                   ...props,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   padding: "10px 22px",
                   backgroundColor: "#19c6c7",
                   color: "#050c40",
                   border: "none",
                   borderRadius: "5px",
+          
                   cursor: "pointer",
+                 
                 }}
               >
                 Learn
               </animated.button>
-            </Link>
-          </div>
+            </Link>       
+             </div>
         )}
         <div
           style={{

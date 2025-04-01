@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, message } from "antd";
+import { message } from "antd";
 import { ShareAltOutlined } from "@ant-design/icons";
 import useAppStore from "../store/store";
 
@@ -24,9 +24,13 @@ const UseShare = () => {
 
   return (
     <div className="share-element">
-      <Button icon={<ShareAltOutlined />} onClick={handleCopy}>
+      <button
+        onClick={handleCopy}
+       className="bg-#ffffff text-sm border border-#ddd px-4 py-1.5 rounded hover:bg-#e0e0e0 hover:text-#050c40 transition-colors gap-2"
+      >
+        <ShareAltOutlined />
         {copied ? "Copied!" : "Share"}
-      </Button>
+      </button>
     </div>
   );
 };

@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { App as AntdApp, Layout, Row, Col, Collapse, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 import { Routes, Route, useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -18,7 +16,7 @@ import LearnContent from "./components/Content";
 import FloatingFAB from "./components/FabButton";
 import ResizableContainer from "./components/ResizableContainer";
 
-const { Content } = Layout;
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ const App = () => {
   const loadFromLink = useAppStore((state) => state.loadFromLink);
   const backgroundColor = useAppStore((state) => state.backgroundColor);
   const textColor = useAppStore((state) => state.textColor);
-  const [activePanel, setActivePanel] = useState<string | string[]>();
+  const [activePanel, setActivePanel] = useState<string | undefined>('templateMark');
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
 
@@ -37,8 +35,8 @@ const App = () => {
     }
   };
 
-  const onChange = (key: string | string[]) => {
-    setActivePanel(key);
+  const onChange = (key: string) => {
+    setActivePanel(activePanel === key ? undefined : key);
   };
 
   useEffect(() => {
@@ -62,26 +60,6 @@ const App = () => {
     };
     initializeApp();
   }, [init, loadFromLink, searchParams, navigate]);
-
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      .ant-collapse-header {
-        color: ${textColor} !important;
-      }
-      .ant-collapse-content {
-        background-color: ${backgroundColor} !important;
-      }
-      .ant-collapse-content-active {
-        background-color: ${backgroundColor} !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, [backgroundColor, textColor]);
 
   useEffect(() => {
     const startTour = async () => {
@@ -118,106 +96,97 @@ const App = () => {
   ];
 
   return (
-    <AntdApp>
-      <Layout style={{ minHeight: "100vh" }}>
-        <Navbar scrollToFooter={scrollToFooter} />
-        <Content>
-          {loading ? (
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "calc(100vh - 64px - 70px)", // Adjust for Navbar and Footer height
-              }}
-            >
-              <Spinner />
-            </div>
-          ) : (
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <div
-                    style={{
-                      padding: 24,
-                      paddingBottom: 24,
-                      minHeight: 360,
-                      background: backgroundColor,
-                    }}
-                  >
-                    <Row>
-                      <Col xs={24} sm={8}>
-                        <Row
-                          style={{
-                            marginLeft: "25px",
-                            display: "flex",
-                            flexDirection: "row",
-                            gap: "10px",
-                          }}
-                        >
-                          <SampleDropdown setLoading={setLoading} />
-                          <UseShare />
-                        </Row>
-                      </Col>
-                      <Col span={18}>
-                        <Errors />
-                      </Col>
-                    </Row>
-                    <div
-                      style={{
-                        padding: 24,
-                        minHeight: 360,
-                        background: backgroundColor,
-                      }}
-                    >
-                      <ResizableContainer
-  leftPane={
-    <Collapse
-      defaultActiveKey={activePanel}
-      onChange={onChange}
-      items={panels}
-     style={{ marginBottom: "24px" }}
-    />
-  }
-  rightPane={<AgreementHtml loading={loading} isModal={false} />}
-  initialLeftWidth={66}
-  minLeftWidth={30}
-  minRightWidth={30}
-/>
+    <div className="min-h-screen flex flex-col">
+      <Navbar scrollToFooter={scrollToFooter} />
+      <main className="flex-1">
+        {loading ? (
+          <div className="flex justify-center items-center" style={{ minHeight: 'calc(100vh - 64px - 70px)' }}>
+            <Spinner />
+          </div>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="pt-6 pl-12 pb-6 pr-12   space-y-6 bg-white text-gray-900 flex-1 min-h-[600px]" style={{ background: backgroundColor, color: textColor }}>
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="w-full md:w-1/3 space-y-4">
+                      <div className="flex gap-2">
+                        <SampleDropdown setLoading={setLoading} />
+                        <UseShare />
+                      </div>
                     </div>
-                    <FloatingFAB />
+                    <div className="w-full md:w-2/3">
+                      <Errors />
+                    </div>
                   </div>
-                }
-              />
-              <Route path="/learn" element={<LearnNow />}>
-                <Route path="intro" element={<LearnContent file="intro.md" />} />
-                <Route path="module1" element={<LearnContent file="module1.md" />} />
-                <Route path="module2" element={<LearnContent file="module2.md" />} />
-                <Route path="module3" element={<LearnContent file="module3.md" />} />
-              </Route>
-            </Routes>
-          )}
-        </Content>
-        <Footer />
-      </Layout>
-    </AntdApp>
+                  <div className=" min-h-[500px]" style={{ background: backgroundColor }}>
+                    <ResizableContainer
+                     
+                      leftPane={
+                        <div className="h-full w-full overflow-auto ">
+                          {panels.map((panel, index) => (
+                            <div key={panel.key} className={`border border-#ddd ${index === 0 ? 'rounded-t-lg' : ''} ${index === panels.length - 1 ? 'rounded-b-lg' : ''}`} >
+                             
+                              <button
+                                className={`w-full bg-slate-50 text-left p-3 flex items-center gap-2 text-sm ${index === 0 ? 'rounded-t-lg' : ''} ${activePanel === panel.key ? 'border border-#ddd' : ''}`}
+                                onClick={() => onChange(panel.key)}
+                              >
+                                <svg
+                                  className={`w-4 h-4 transform transition-transform duration-200 ${activePanel === panel.key ? 'rotate-90' : 'rotate-0'}`}
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                  />
+                                </svg>
+                                {panel.label}
+                              </button>
+                            
+                              <div className={`p-4 ${activePanel === panel.key ? 'block' : 'hidden'}`}>
+                                {panel.children}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      }
+                      rightPane={
+                        <div className="h-full  bg-white rounded-lg shadow-sm">
+                          <AgreementHtml loading={loading} isModal={false} />
+                        </div>
+                      }
+                      initialLeftWidth={66}
+                      minLeftWidth={30}
+                      minRightWidth={30}
+                    />
+                  </div>
+                  <FloatingFAB />
+                </div>
+              }
+            />
+            <Route path="/learn" element={<LearnNow />}>
+              <Route path="intro" element={<LearnContent file="intro.md" />} />
+              <Route path="module1" element={<LearnContent file="module1.md" />} />
+              <Route path="module2" element={<LearnContent file="module2.md" />} />
+              <Route path="module3" element={<LearnContent file="module3.md" />} />
+            </Route>
+          </Routes>
+        )}
+      </main>
+      <Footer />
+    </div>
   );
 };
 
 const Spinner = () => (
-  <div
-    style={{
-      flex: 1,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    }}
-  >
-    <Spin
-      indicator={<LoadingOutlined style={{ fontSize: 42, color: "#19c6c7" }} spin />}
-    />
+  <div className="flex justify-center items-center">
+    <div className="h-8 w-8 border-4 border-[#19c6c7] border-t-transparent rounded-full animate-spin" />
   </div>
 );
 

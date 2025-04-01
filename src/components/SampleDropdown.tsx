@@ -1,4 +1,4 @@
-import { Button, Dropdown, Space, message, MenuProps } from "antd";
+import {  Dropdown, Space, message, MenuProps } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { useCallback, useMemo, useState } from "react";
 import useAppStore from "../store/store";
@@ -53,9 +53,15 @@ function SampleDropdown({
     <Space>
       <Dropdown menu={{ items, onClick: (e) => void handleMenuClick(e) }} trigger={["click"]}>
         <div className="samples-element">
-          <Button aria-label="Load sample dropdown">
-            {selectedSample ? selectedSample : "Load Sample"} <DownOutlined />
-          </Button>
+          <button
+            onClick={(e) => e.preventDefault()}
+            className="bg-#ffffff text-sm border border-#ddd px-4 py-1.5 rounded hover:bg-#e0e0e0 hover:text-#050c40 transition-colors"
+          >
+            <Space>
+              {selectedSample || "Load Sample"}
+              <DownOutlined />
+            </Space>
+          </button>
         </div>
       </Dropdown>
     </Space>
